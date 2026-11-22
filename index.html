@@ -22,6 +22,7 @@
   a.btn { display:block; text-align:center; text-decoration:none; font-weight:600; border-radius:10px; padding:14px 16px;
           background:var(--accent); color:var(--accent-ink); }
   a.btn:focus-visible { outline:3px solid var(--ink); outline-offset:2px; }
+  a.btn.alt { background:transparent; color:var(--ink); border:1px solid var(--line); }
   small { color:var(--muted); display:block; margin-top:10px; }
 </style>
 </head>
@@ -31,8 +32,13 @@
   <p class="sub">Fais parler une photo ou une vidéo, gratuitement.</p>
 
   <section>
-    <a class="btn" href="https://colab.research.google.com/github/gregory-bot-dot/ai-lipsync-studio/blob/main/photo-parlante-colab.ipynb" target="_blank" rel="noopener">Ouvrir le notebook dans Colab</a>
-    <small>S’ouvre dans Google Colab. Utilise la « version ordinateur » du navigateur sur téléphone.</small>
+    <a class="btn" href="https://colab.research.google.com/github/gregory-bot-dot/ai-lipsync-studio/blob/main/photo-parlante-interface.ipynb" target="_blank" rel="noopener">Ouvrir avec l’interface web (Colab)</a>
+    <small>Un petit site pour envoyer tes fichiers et écrire un texte. Garde l’onglet Colab ouvert.</small>
+  </section>
+
+  <section>
+    <a class="btn alt" href="https://colab.research.google.com/github/gregory-bot-dot/ai-lipsync-studio/blob/main/photo-parlante-colab.ipynb" target="_blank" rel="noopener">Ouvrir la version classique (Colab)</a>
+    <small>Celle qui fonctionne déjà : tu envoies les fichiers directement dans Colab. Utilise la « version ordinateur » du navigateur sur téléphone.</small>
   </section>
 
   <section>
