@@ -3,428 +3,58 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Photo parlante</title>
+<title>Visage parlant</title>
 <style>
-  :root {
-    --bg: #eef2f0; --card: #ffffff; --ink: #1b2b2a; --muted: #5b6e6c;
-    --line: #cfdad7; --accent: #d63a73; --accent-ink: #ffffff; --ok: #2f6b5e;
-  }
+  :root { --bg:#eef2f0; --card:#fff; --ink:#1b2b2a; --muted:#5b6e6c; --line:#cfdad7; --accent:#d63a73; --accent-ink:#fff; }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #121b1a; --card: #1b2726; --ink: #e8f0ee; --muted: #93a8a5;
-            --line: #2d3f3d; --accent: #ff6b9a; --accent-ink: #1b0a12; --ok: #7fd1bd; }
+    :root { --bg:#121b1a; --card:#1b2726; --ink:#e8f0ee; --muted:#93a8a5; --line:#2d3f3d; --accent:#ff6b9a; --accent-ink:#1b0a12; }
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font: 16px/1.5 "Avenir Next", "Segoe UI", system-ui, sans-serif;
-    padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
-  }
-  main { max-width: 520px; margin: 0 auto; }
-  h1 { font-size: 1.9rem; line-height: 1.1; margin: 8px 0 4px; letter-spacing: -0.02em; }
-  .sub { color: var(--muted); margin: 0 0 20px; }
-  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
-  h2 { font-size: 1rem; margin: 0 0 10px; }
-  label { display: block; font-size: .9rem; color: var(--muted); margin: 10px 0 4px; }
-  label.check { display: flex; gap: 10px; align-items: flex-start; color: var(--ink); margin: 0 0 12px; }
-  label.check input { margin-top: 5px; width: 18px; height: 18px; flex: none; accent-color: var(--accent); }
-  input[type=text], input[type=password] {
-    width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--line);
-    background: transparent; color: var(--ink); font: inherit;
-  }
-  input[type=file] { width: 100%; font: inherit; color: var(--ink); }
-  button {
-    font: inherit; font-weight: 600; border: 0; border-radius: 10px; padding: 12px 16px;
-    background: var(--accent); color: var(--accent-ink); width: 100%; cursor: pointer;
-  }
-  button.alt { background: transparent; color: var(--ink); border: 1px solid var(--line); }
-  button:disabled { opacity: .5; cursor: not-allowed; }
-  button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-  .row { display: flex; gap: 10px; margin-top: 10px; }
-  .preview { margin-top: 10px; max-height: 260px; max-width: 100%; border-radius: 10px; display: none; }
-  audio, video { width: 100%; margin-top: 10px; border-radius: 10px; }
-  #status { min-height: 1.5em; color: var(--muted); font-size: .95rem; margin: 10px 0 0; }
-  #status.err { color: var(--accent); }
-  #status.ok { color: var(--ok); }
-  details summary { cursor: pointer; color: var(--muted); font-size: .95rem; }
-  small { color: var(--muted); display: block; margin-top: 8px; }
-  pre { white-space: pre-wrap; word-break: break-word; font-size: .78rem; color: var(--muted);
-        background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 10px;
-        max-height: 220px; overflow: auto; margin: 10px 0 0; }
-  a { color: var(--accent); }
-  a.linkbtn { display: block; text-align: center; text-decoration: none; font-weight: 600; border-radius: 10px;
-              padding: 12px 16px; border: 1px solid var(--line); color: var(--ink); width: 100%; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 "Avenir Next","Segoe UI",system-ui,sans-serif;
+         padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom)); }
+  main { max-width:520px; margin:0 auto; }
+  h1 { font-size:1.9rem; line-height:1.1; margin:8px 0 4px; letter-spacing:-.02em; }
+  .sub { color:var(--muted); margin:0 0 20px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px; }
+  h2 { font-size:1rem; margin:0 0 8px; }
+  ol, ul { margin:0; padding-left:20px; }
+  li { margin:4px 0; }
+  a.btn { display:block; text-align:center; text-decoration:none; font-weight:600; border-radius:10px; padding:14px 16px;
+          background:var(--accent); color:var(--accent-ink); }
+  a.btn:focus-visible { outline:3px solid var(--ink); outline-offset:2px; }
+  small { color:var(--muted); display:block; margin-top:10px; }
 </style>
 </head>
 <body>
 <main>
-  <h1>Photo parlante</h1>
-  <p class="sub">Choisis un visage et une voix : la photo se met à parler.</p>
+  <h1>Visage parlant</h1>
+  <p class="sub">Fais parler une photo ou une vidéo, gratuitement.</p>
 
   <section>
-    <h2>Photo</h2>
-    <input id="photo" type="file" accept="image/*">
-    <img id="photoPreview" class="preview" alt="Aperçu de la photo">
-    <small id="photoInfo">Visage de face, net, bouche visible.</small>
+    <a class="btn" href="https://colab.research.google.com/github/gregory-bot-dot/gregory-bot-dot.github.io/blob/main/photo-parlante-colab.ipynb" target="_blank" rel="noopener">Ouvrir le notebook dans Colab</a>
+    <small>S’ouvre dans Google Colab. Utilise la « version ordinateur » du navigateur sur téléphone.</small>
   </section>
 
   <section>
-    <h2>Voix</h2>
-    <input id="audioFile" type="file" accept="audio/*">
-    <div class="row">
-      <button id="recBtn" class="alt" type="button">Enregistrer ma voix</button>
-    </div>
-    <audio id="audioPreview" controls style="display:none"></audio>
-    <small id="audioInfo">Moins de 30 secondes, sans musique de fond.</small>
+    <h2>Étapes</h2>
+    <ol>
+      <li>Active le GPU : Exécution, puis Modifier le type d’exécution, puis T4 GPU.</li>
+      <li>Écris un texte à lire, ou laisse vide pour envoyer ta voix.</li>
+      <li>Exécution, puis Tout exécuter.</li>
+      <li>À l’étape 2, choisis ta photo ou vidéo (et ton audio) tout de suite.</li>
+      <li>Attends 10 à 25 minutes la première fois. La vidéo se télécharge seule.</li>
+    </ol>
   </section>
 
   <section>
-    <label class="check" for="consent">
-      <input id="consent" type="checkbox">
-      <span>J’ai l’accord de la personne dont le visage et la voix sont utilisés.</span>
-    </label>
-    <button id="go" type="button">Animer la photo</button>
-    <p id="status" role="status" aria-live="polite"></p>
-    <video id="result" controls playsinline style="display:none"></video>
-    <div class="row" id="resultActions" style="display:none">
-      <button id="dl" class="alt" type="button">Télécharger la vidéo</button>
-    </div>
-    <small id="aiNote" style="display:none">Si tu publies cette vidéo, indique qu’elle est générée par IA.</small>
-  </section>
-
-  <section id="manual" style="display:none">
-    <h2>Plan B : mode manuel</h2>
-    <small style="margin:0 0 10px">Ton navigateur n’arrive pas à joindre les Spaces depuis cette page. Enregistre la photo et la voix préparées, puis envoie-les directement dans le Space.</small>
-    <div class="row"><button id="dlPhoto" class="alt" type="button">Enregistrer la photo préparée</button></div>
-    <div class="row"><button id="dlVoice" class="alt" type="button">Enregistrer la voix préparée</button></div>
-    <div class="row"><a id="openSpace" class="linkbtn" href="https://huggingface.co/spaces/John6666/SadTalker" target="_blank" rel="noopener">Ouvrir un Space SadTalker</a></div>
-  </section>
-
-  <section>
-    <details>
-      <summary>Réglages et détails techniques</summary>
-      <label for="space">Autre Space à essayer en premier (facultatif)</label>
-      <input id="space" type="text" value="" placeholder="vinthony/SadTalker (par défaut)" autocapitalize="off" autocorrect="off">
-      <label for="token">Jeton Hugging Face (facultatif, évite les limites de quota)</label>
-      <input id="token" type="password" placeholder="hf_..." autocomplete="off">
-      <label for="outName">Nom du fichier téléchargé</label>
-      <input id="outName" type="text" value="photo-parlante" autocapitalize="off" autocorrect="off">
-      <small>Le jeton reste dans ce navigateur uniquement.</small>
-      <pre id="log" aria-label="Journal technique">Rien pour l’instant.</pre>
-      <div class="row"><button id="copyLog" class="alt" type="button">Copier le journal</button></div>
-    </details>
+    <h2>Pour un bon résultat</h2>
+    <ul>
+      <li>Visage de face, net, bouche visible.</li>
+      <li>Voix claire, moins de 30 secondes, sans musique.</li>
+      <li>Une vidéo de visage rend mieux qu’une photo.</li>
+    </ul>
+    <small>N’utilise que des visages et des voix dont tu as l’accord, et indique « généré par IA » quand tu publies.</small>
   </section>
 </main>
-
-<script type="module">
-import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client@1.15.1/+esm";
-
-const $ = (id) => document.getElementById(id);
-const statusEl = $("status");
-const MAX_AUDIO_SEC = 30;
-const MAX_IMG_SIDE = 1024;
-const DEFAULT_SPACES = ["vinthony/SadTalker", "John6666/SadTalker"];
-
-let photoFile = null, audioBlob = null, recorder = null, chunks = [];
-let baseMsg = "", timer = null, t0 = 0, resultUrl = null, prepPhoto = null, prepAudio = null;
-const logs = [];
-
-/* ---------- Affichage ---------- */
-function say(msg, cls = "") { statusEl.textContent = msg; statusEl.className = cls; }
-function log(m) {
-  logs.push(new Date().toLocaleTimeString() + "  " + m);
-  $("log").textContent = logs.join("\n");
-}
-function startTimer(msg) {
-  stopTimer(); t0 = Date.now(); baseMsg = msg;
-  const tick = () => say(baseMsg + " (" + Math.round((Date.now() - t0) / 1000) + " s)");
-  tick(); timer = setInterval(tick, 1000);
-}
-function setBase(msg) { baseMsg = msg; }
-function stopTimer() { if (timer) clearInterval(timer); timer = null; }
-
-/* ---------- Réglages mémorisés ---------- */
-try {
-  $("space").value = localStorage.getItem("pp_space") || "";
-  $("token").value = localStorage.getItem("pp_token") || "";
-  $("outName").value = localStorage.getItem("pp_out") || $("outName").value;
-} catch (e) {}
-
-/* ---------- Préparation de la photo : orientation, taille max, dimensions paires ---------- */
-async function prepareImage(file) {
-  const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
-  const k = Math.min(1, MAX_IMG_SIDE / Math.max(bmp.width, bmp.height));
-  const w = Math.max(2, Math.round(bmp.width * k / 2) * 2);
-  const h = Math.max(2, Math.round(bmp.height * k / 2) * 2);
-  const c = document.createElement("canvas");
-  c.width = w; c.height = h;
-  c.getContext("2d").drawImage(bmp, 0, 0, w, h);
-  const blob = await new Promise((res) => c.toBlob(res, "image/jpeg", 0.92));
-  return { file: new File([blob], "photo.jpg", { type: "image/jpeg" }), w, h };
-}
-
-/* ---------- Préparation de l’audio : WAV mono 16 kHz, 30 s max ---------- */
-function encodeWav(samples, sr) {
-  const buf = new ArrayBuffer(44 + samples.length * 2);
-  const v = new DataView(buf);
-  const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-  str(0, "RIFF"); v.setUint32(4, 36 + samples.length * 2, true); str(8, "WAVE");
-  str(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
-  str(36, "data"); v.setUint32(40, samples.length * 2, true);
-  for (let i = 0; i < samples.length; i++) {
-    const s = Math.max(-1, Math.min(1, samples[i]));
-    v.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true);
-  }
-  return new Blob([buf], { type: "audio/wav" });
-}
-async function prepareAudio(blob) {
-  const AC = window.AudioContext || window.webkitAudioContext;
-  const ctx = new AC();
-  const dec = await ctx.decodeAudioData(await blob.arrayBuffer());
-  ctx.close();
-  const sr = 16000, len = Math.min(dec.duration, MAX_AUDIO_SEC);
-  const off = new OfflineAudioContext(1, Math.ceil(len * sr), sr);
-  const src = off.createBufferSource();
-  src.buffer = dec; src.connect(off.destination); src.start(0);
-  const out = await off.startRendering();
-  return { file: new File([encodeWav(out.getChannelData(0), sr)], "voix.wav", { type: "audio/wav" }),
-           duration: len, trimmed: dec.duration > MAX_AUDIO_SEC };
-}
-
-/* ---------- Entrées ---------- */
-$("photo").addEventListener("change", (e) => {
-  photoFile = e.target.files[0] || null;
-  if (!photoFile) return;
-  const img = $("photoPreview");
-  img.src = URL.createObjectURL(photoFile); img.style.display = "block";
-  $("photoInfo").textContent = "Photo prête.";
-});
-
-function setAudio(blob) {
-  audioBlob = blob;
-  const a = $("audioPreview");
-  a.src = URL.createObjectURL(blob); a.style.display = "block";
-  $("audioInfo").textContent = "Voix prête.";
-}
-$("audioFile").addEventListener("change", (e) => { if (e.target.files[0]) setAudio(e.target.files[0]); });
-
-$("recBtn").addEventListener("click", async () => {
-  const btn = $("recBtn");
-  if (recorder && recorder.state === "recording") { recorder.stop(); return; }
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    chunks = [];
-    recorder = new MediaRecorder(stream);
-    recorder.ondataavailable = (ev) => chunks.push(ev.data);
-    recorder.onstop = () => {
-      stream.getTracks().forEach((t) => t.stop());
-      const type = recorder.mimeType || "audio/mp4";
-      const ext = type.includes("webm") ? "webm" : type.includes("ogg") ? "ogg" : "m4a";
-      setAudio(new File(chunks, "voix." + ext, { type }));
-      btn.textContent = "Réenregistrer";
-    };
-    recorder.start();
-    btn.textContent = "Arrêter l’enregistrement";
-  } catch (err) {
-    say("Micro refusé. Autorise le micro dans le navigateur ou importe un fichier audio.", "err");
-  }
-});
-
-
-/* ---------- Recherche de Spaces qui tournent vraiment ---------- */
-const DEAD = ["PAUSED", "RUNTIME_ERROR", "BUILD_ERROR", "CONFIG_ERROR", "NO_APP_FILE", "DELETING", "STOPPED"];
-async function stageOf(id) {
-  try {
-    const r = await fetch("https://huggingface.co/api/spaces/" + id);
-    if (!r.ok) return "INTROUVABLE";
-    const j = await r.json();
-    return (j.runtime && j.runtime.stage) || "INCONNU";
-  } catch (e) { return "INCONNU"; }
-}
-async function buildCandidates(custom) {
-  let ids = [custom, ...DEFAULT_SPACES].filter(Boolean);
-  try {
-    const r = await fetch("https://huggingface.co/api/spaces?search=sadtalker&sort=likes&direction=-1&limit=12");
-    if (r.ok) (await r.json()).forEach((x) => ids.push(x.id));
-  } catch (e) { log("Recherche de Spaces impossible"); }
-  ids = [...new Set(ids)];
-  const stages = await Promise.all(ids.map(stageOf));
-  const ok = [];
-  ids.forEach((id, i) => {
-    log(id + " : " + stages[i]);
-    if (!DEAD.includes(stages[i]) && stages[i] !== "INTROUVABLE") ok.push({ id, running: stages[i] === "RUNNING" });
-  });
-  ok.sort((a, b) => Number(b.running) - Number(a.running));
-  return ok.slice(0, 5).map((x) => x.id);
-}
-
-
-/* ---------- Diagnostic réseau (pour comprendre un « Load failed ») ---------- */
-async function probe(id) {
-  log("Diagnostic de " + id);
-  try {
-    const r = await fetch("https://huggingface.co/api/spaces/" + id + "/host");
-    const t = await r.text();
-    log("  API host : HTTP " + r.status + " " + t.slice(0, 140));
-    let host = null;
-    try { const j = JSON.parse(t); host = j.host || (j.subdomain ? "https://" + j.subdomain + ".hf.space" : null); } catch (e) {}
-    if (!host) return;
-    host = host.replace(/\/$/, "");
-    for (const path of ["/config", "/gradio_api/info", "/info"]) {
-      try { const r2 = await fetch(host + path); log("  " + path + " : HTTP " + r2.status); }
-      catch (e) { log("  " + path + " : " + e.name + " " + e.message); }
-    }
-  } catch (e) { log("  diagnostic impossible : " + e.name + " " + e.message); }
-}
-function saveFile(file, name) {
-  if (!file) return;
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(file); a.download = name;
-  document.body.appendChild(a); a.click(); a.remove();
-}
-
-/* ---------- Appel d’un Space ---------- */
-function findVideoUrl(data) {
-  for (const item of data || []) {
-    if (!item) continue;
-    if (typeof item === "string" && /^https?:/.test(item)) return item;
-    if (item.video && item.video.url) return item.video.url;
-    if (item.url) return item.url;
-  }
-  return null;
-}
-
-async function runSpace(spaceId, token, photo, audio) {
-  setBase("Connexion à " + spaceId + "…"); log("Connexion à " + spaceId);
-  const client = await Client.connect(spaceId, token ? { hf_token: token } : {});
-  const api = await client.view_api();
-  const endpoints = Object.entries(api.named_endpoints || {});
-  if (!endpoints.length) throw new Error("API indisponible");
-
-  const pick = endpoints.find(([, ep]) => {
-    const comps = ep.parameters.map((p) => (p.component || "").toLowerCase());
-    return comps.includes("image") && comps.includes("audio");
-  });
-  if (!pick) throw new Error("ce Space n’accepte pas photo + audio");
-  const [name, ep] = pick;
-  log("Endpoint " + name + " (" + ep.parameters.length + " champs)");
-
-  const args = {};
-  let imageDone = false, audioDone = false;
-  for (const p of ep.parameters) {
-    const c = (p.component || "").toLowerCase();
-    if (c === "image" && !imageDone) { args[p.parameter_name] = handle_file(photo); imageDone = true; }
-    else if (c === "audio" && !audioDone) { args[p.parameter_name] = handle_file(audio); audioDone = true; }
-    else if (p.parameter_has_default) { args[p.parameter_name] = p.parameter_default; }
-    else { args[p.parameter_name] = null; }
-  }
-
-  setBase("Génération sur " + spaceId + ", 1 à 5 minutes");
-  const job = client.submit(name, args);
-  let result = null;
-  for await (const msg of job) {
-    if (msg.type === "status") {
-      if (msg.stage === "error") throw new Error(msg.message || "erreur du Space");
-      if (msg.position != null) setBase("File d’attente, position " + (msg.position + 1));
-      else if (msg.stage === "pending") setBase("Génération sur " + spaceId);
-    }
-    if (msg.type === "data") result = msg;
-  }
-  const url = result && findVideoUrl(result.data);
-  if (!url) throw new Error("aucune vidéo reçue");
-  return url;
-}
-
-/* ---------- Bouton principal ---------- */
-$("go").addEventListener("click", async () => {
-  if (!photoFile) return say("Ajoute d’abord une photo.", "err");
-  if (!audioBlob) return say("Ajoute d’abord une voix (fichier ou enregistrement).", "err");
-  if (!$("consent").checked) return say("Coche la case d’accord avant de continuer.", "err");
-
-  const custom = $("space").value.trim();
-  const token = $("token").value.trim();
-  try {
-    localStorage.setItem("pp_space", custom);
-    localStorage.setItem("pp_token", token);
-    localStorage.setItem("pp_out", $("outName").value.trim());
-  } catch (e) {}
-
-  const go = $("go");
-  go.disabled = true;
-  $("result").style.display = "none";
-  $("resultActions").style.display = "none";
-  $("aiNote").style.display = "none";
-  logs.length = 0;
-
-  try {
-    startTimer("Préparation de la photo et de la voix…");
-    let photo = photoFile, audio = audioBlob; prepPhoto = photoFile; prepAudio = audioBlob;
-    try {
-      const p = await prepareImage(photoFile);
-      photo = p.file; prepPhoto = p.file; log("Photo : " + p.w + "×" + p.h + " px");
-    } catch (e) { log("Photo envoyée telle quelle (" + e.message + ")"); }
-    try {
-      const a = await prepareAudio(audioBlob);
-      audio = a.file; prepAudio = a.file; log("Voix : " + a.duration.toFixed(1) + " s, WAV 16 kHz mono");
-      if (a.trimmed) log("Voix coupée à " + MAX_AUDIO_SEC + " s");
-    } catch (e) { log("Voix envoyée telle quelle (" + e.message + ")"); }
-
-    setBase("Recherche d’un Space disponible…");
-    const list = await buildCandidates(custom);
-    if (!list.length) throw new Error("aucun Space SadTalker actif pour le moment");
-    const errs = [];
-    for (const id of list) {
-      try {
-        const url = await runSpace(id, token, photo, audio);
-        stopTimer();
-        resultUrl = url;
-        const v = $("result");
-        v.src = url; v.style.display = "block";
-        $("resultActions").style.display = "flex";
-        $("aiNote").style.display = "block";
-        say("Terminé en " + Math.round((Date.now() - t0) / 1000) + " s.", "ok");
-        log("Succès avec " + id);
-        go.disabled = false;
-        return;
-      } catch (err) {
-        const m = id + " : " + ((err && (err.name ? err.name + " " : "") + (err.message || err.detail)) || String(err));
-        errs.push(m); log("Échec " + m);
-      }
-    }
-    stopTimer();
-    await probe(list[0]);
-    $("manual").style.display = "block";
-    $("openSpace").href = "https://huggingface.co/spaces/" + list[0];
-    say("Aucun Space n’a répondu (" + errs.length + " essayés). Réessaie dans quelques minutes ou ajoute un jeton dans Réglages. Détails : " + errs.map((e) => e.slice(0, 60)).join(" | "), "err");
-  } catch (err) {
-    stopTimer();
-    say("Erreur : " + (err.message || err), "err");
-  }
-  go.disabled = false;
-});
-
-/* ---------- Téléchargement (fonctionne aussi depuis une page hébergée) ---------- */
-$("dl").addEventListener("click", async () => {
-  if (!resultUrl) return;
-  const name = ($("outName").value.trim() || "photo-parlante").replace(/[^A-Za-z0-9._-]+/g, "_") + ".mp4";
-  try {
-    const blob = await (await fetch(resultUrl)).blob();
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
-  } catch (e) {
-    window.open(resultUrl, "_blank");
-  }
-});
-
-$("dlPhoto").addEventListener("click", () => saveFile(prepPhoto, "photo.jpg"));
-$("dlVoice").addEventListener("click", () => saveFile(prepAudio, prepAudio && prepAudio.name ? prepAudio.name : "voix.wav"));
-
-$("copyLog").addEventListener("click", async () => {
-  try { await navigator.clipboard.writeText(logs.join("\n") || "Journal vide"); say("Journal copié.", "ok"); }
-  catch (e) { say("Copie impossible : sélectionne le texte à la main.", "err"); }
-});
-</script>
 </body>
 </html>
