@@ -221,6 +221,34 @@ $("recBtn").addEventListener("click", async () => {
   }
 });
 
+
+/* ---------- Recherche de Spaces qui tournent vraiment ---------- */
+const DEAD = ["PAUSED", "RUNTIME_ERROR", "BUILD_ERROR", "CONFIG_ERROR", "NO_APP_FILE", "DELETING", "STOPPED"];
+async function stageOf(id) {
+  try {
+    const r = await fetch("https://huggingface.co/api/spaces/" + id);
+    if (!r.ok) return "INTROUVABLE";
+    const j = await r.json();
+    return (j.runtime && j.runtime.stage) || "INCONNU";
+  } catch (e) { return "INCONNU"; }
+}
+async function buildCandidates(custom) {
+  let ids = [custom, ...DEFAULT_SPACES].filter(Boolean);
+  try {
+    const r = await fetch("https://huggingface.co/api/spaces?search=sadtalker&sort=likes&direction=-1&limit=12");
+    if (r.ok) (await r.json()).forEach((x) => ids.push(x.id));
+  } catch (e) { log("Recherche de Spaces impossible"); }
+  ids = [...new Set(ids)];
+  const stages = await Promise.all(ids.map(stageOf));
+  const ok = [];
+  ids.forEach((id, i) => {
+    log(id + " : " + stages[i]);
+    if (!DEAD.includes(stages[i]) && stages[i] !== "INTROUVABLE") ok.push({ id, running: stages[i] === "RUNNING" });
+  });
+  ok.sort((a, b) => Number(b.running) - Number(a.running));
+  return ok.slice(0, 5).map((x) => x.id);
+}
+
 /* ---------- Appel d’un Space ---------- */
 function findVideoUrl(data) {
   for (const item of data || []) {
@@ -307,8 +335,10 @@ $("go").addEventListener("click", async () => {
       if (a.trimmed) log("Voix coupée à " + MAX_AUDIO_SEC + " s");
     } catch (e) { log("Voix envoyée telle quelle (" + e.message + ")"); }
 
-    const list = [...new Set([custom, ...DEFAULT_SPACES].filter(Boolean))];
-    let lastErr = "";
+    setBase("Recherche d’un Space disponible…");
+    const list = await buildCandidates(custom);
+    if (!list.length) throw new Error("aucun Space SadTalker actif pour le moment");
+    const errs = [];
     for (const id of list) {
       try {
         const url = await runSpace(id, token, photo, audio);
@@ -323,12 +353,12 @@ $("go").addEventListener("click", async () => {
         go.disabled = false;
         return;
       } catch (err) {
-        lastErr = id + " : " + ((err && (err.message || err.detail)) || String(err));
-        log("Échec " + lastErr);
+        const m = id + " : " + ((err && (err.message || err.detail)) || String(err));
+        errs.push(m); log("Échec " + m);
       }
     }
     stopTimer();
-    say("Échec sur tous les Spaces (" + lastErr + "). Appuie de nouveau pour réessayer, ou ajoute un jeton dans Réglages.", "err");
+    say("Aucun Space n’a répondu (" + errs.length + " essayés). Réessaie dans quelques minutes ou ajoute un jeton dans Réglages. Détails : " + errs.map((e) => e.slice(0, 60)).join(" | "), "err");
   } catch (err) {
     stopTimer();
     say("Erreur : " + (err.message || err), "err");
