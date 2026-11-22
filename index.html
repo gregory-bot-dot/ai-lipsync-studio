@@ -52,6 +52,8 @@
         background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 10px;
         max-height: 220px; overflow: auto; margin: 10px 0 0; }
   a { color: var(--accent); }
+  a.linkbtn { display: block; text-align: center; text-decoration: none; font-weight: 600; border-radius: 10px;
+              padding: 12px 16px; border: 1px solid var(--line); color: var(--ink); width: 100%; }
 </style>
 </head>
 <body>
@@ -90,6 +92,14 @@
     <small id="aiNote" style="display:none">Si tu publies cette vidéo, indique qu’elle est générée par IA.</small>
   </section>
 
+  <section id="manual" style="display:none">
+    <h2>Plan B : mode manuel</h2>
+    <small style="margin:0 0 10px">Ton navigateur n’arrive pas à joindre les Spaces depuis cette page. Enregistre la photo et la voix préparées, puis envoie-les directement dans le Space.</small>
+    <div class="row"><button id="dlPhoto" class="alt" type="button">Enregistrer la photo préparée</button></div>
+    <div class="row"><button id="dlVoice" class="alt" type="button">Enregistrer la voix préparée</button></div>
+    <div class="row"><a id="openSpace" class="linkbtn" href="https://huggingface.co/spaces/John6666/SadTalker" target="_blank" rel="noopener">Ouvrir un Space SadTalker</a></div>
+  </section>
+
   <section>
     <details>
       <summary>Réglages et détails techniques</summary>
@@ -116,7 +126,7 @@ const MAX_IMG_SIDE = 1024;
 const DEFAULT_SPACES = ["vinthony/SadTalker", "John6666/SadTalker"];
 
 let photoFile = null, audioBlob = null, recorder = null, chunks = [];
-let baseMsg = "", timer = null, t0 = 0, resultUrl = null;
+let baseMsg = "", timer = null, t0 = 0, resultUrl = null, prepPhoto = null, prepAudio = null;
 const logs = [];
 
 /* ---------- Affichage ---------- */
@@ -249,6 +259,31 @@ async function buildCandidates(custom) {
   return ok.slice(0, 5).map((x) => x.id);
 }
 
+
+/* ---------- Diagnostic réseau (pour comprendre un « Load failed ») ---------- */
+async function probe(id) {
+  log("Diagnostic de " + id);
+  try {
+    const r = await fetch("https://huggingface.co/api/spaces/" + id + "/host");
+    const t = await r.text();
+    log("  API host : HTTP " + r.status + " " + t.slice(0, 140));
+    let host = null;
+    try { const j = JSON.parse(t); host = j.host || (j.subdomain ? "https://" + j.subdomain + ".hf.space" : null); } catch (e) {}
+    if (!host) return;
+    host = host.replace(/\/$/, "");
+    for (const path of ["/config", "/gradio_api/info", "/info"]) {
+      try { const r2 = await fetch(host + path); log("  " + path + " : HTTP " + r2.status); }
+      catch (e) { log("  " + path + " : " + e.name + " " + e.message); }
+    }
+  } catch (e) { log("  diagnostic impossible : " + e.name + " " + e.message); }
+}
+function saveFile(file, name) {
+  if (!file) return;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(file); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
 /* ---------- Appel d’un Space ---------- */
 function findVideoUrl(data) {
   for (const item of data || []) {
@@ -324,14 +359,14 @@ $("go").addEventListener("click", async () => {
 
   try {
     startTimer("Préparation de la photo et de la voix…");
-    let photo = photoFile, audio = audioBlob;
+    let photo = photoFile, audio = audioBlob; prepPhoto = photoFile; prepAudio = audioBlob;
     try {
       const p = await prepareImage(photoFile);
-      photo = p.file; log("Photo : " + p.w + "×" + p.h + " px");
+      photo = p.file; prepPhoto = p.file; log("Photo : " + p.w + "×" + p.h + " px");
     } catch (e) { log("Photo envoyée telle quelle (" + e.message + ")"); }
     try {
       const a = await prepareAudio(audioBlob);
-      audio = a.file; log("Voix : " + a.duration.toFixed(1) + " s, WAV 16 kHz mono");
+      audio = a.file; prepAudio = a.file; log("Voix : " + a.duration.toFixed(1) + " s, WAV 16 kHz mono");
       if (a.trimmed) log("Voix coupée à " + MAX_AUDIO_SEC + " s");
     } catch (e) { log("Voix envoyée telle quelle (" + e.message + ")"); }
 
@@ -353,11 +388,14 @@ $("go").addEventListener("click", async () => {
         go.disabled = false;
         return;
       } catch (err) {
-        const m = id + " : " + ((err && (err.message || err.detail)) || String(err));
+        const m = id + " : " + ((err && (err.name ? err.name + " " : "") + (err.message || err.detail)) || String(err));
         errs.push(m); log("Échec " + m);
       }
     }
     stopTimer();
+    await probe(list[0]);
+    $("manual").style.display = "block";
+    $("openSpace").href = "https://huggingface.co/spaces/" + list[0];
     say("Aucun Space n’a répondu (" + errs.length + " essayés). Réessaie dans quelques minutes ou ajoute un jeton dans Réglages. Détails : " + errs.map((e) => e.slice(0, 60)).join(" | "), "err");
   } catch (err) {
     stopTimer();
@@ -379,6 +417,9 @@ $("dl").addEventListener("click", async () => {
     window.open(resultUrl, "_blank");
   }
 });
+
+$("dlPhoto").addEventListener("click", () => saveFile(prepPhoto, "photo.jpg"));
+$("dlVoice").addEventListener("click", () => saveFile(prepAudio, prepAudio && prepAudio.name ? prepAudio.name : "voix.wav"));
 
 $("copyLog").addEventListener("click", async () => {
   try { await navigator.clipboard.writeText(logs.join("\n") || "Journal vide"); say("Journal copié.", "ok"); }
